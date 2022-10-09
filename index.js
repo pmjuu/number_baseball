@@ -19,15 +19,13 @@ let attemptsNum = 5
 
 function startGame() {
   //서로 다른 0부터 9까지의 정수 3개를 배열에 넣기
-  let i = 0
-  while(i<3) {
+  while(answerArr.length < 3) {
     let newNum = Math.floor(Math.random()*10)
-    if(!(answerArr.includes(newNum))) {
-      i++
-      answerArr.push(newNum.toString())
-    }
+    answerArr.push(newNum.toString())
+    const answerSet = new Set(answerArr) //중복 제거
+    answerArr = [...answerSet]
   }
-  console.log(answerArr)
+  console.log(`answer arr : ${answerArr}`)
   startBtn.classList.add(HIDDEN_CLASSNAME)
   gameSection.classList.remove(HIDDEN_CLASSNAME)
   form.classList.remove(HIDDEN_CLASSNAME)
@@ -38,17 +36,17 @@ function restartGame() {
   inputNum = 0
   answerArr = []
   inputArr = []
-  attemptsNum = 10
+  attemptsNum = 5
   const liArr = document.querySelectorAll('li')
-  liArr.forEach((e) => e.remove())
+  liArr.forEach(e => e.remove())
   startGame()
 }
 
 function numSubmit(event) {
   event.preventDefault()
   inputNum = parseInt(input.value)
-  inputArr = inputNum.toString().split('')
-  console.log(inputArr)
+  // inputArr = inputNum.toString().split('')
+  inputArr = input.value.split('')
 
   if (!(Number.isInteger(inputNum))) {
     alert('please enter the integer')
@@ -58,8 +56,9 @@ function numSubmit(event) {
     alert('please enter the 3 integers')
     input.value = ''
   }
-  else if (false) {
-    alert('please enter 3 different integers') //서로 다른 3가지 수 입력 여부 어떻게 판별?
+  else if (inputArr[0]===inputArr[1] || inputArr[0]===inputArr[2] || inputArr[1]===inputArr[2]) {
+    alert('please enter 3 different integers') //서로 다른 3가지 수 입력 여부 판별...
+    input.value = ''
   }
   else {
     attemptsNum --
@@ -68,7 +67,7 @@ function numSubmit(event) {
     compare()
     if(attemptsNum === 0) {
       form.classList.add(HIDDEN_CLASSNAME)
-      attempts.textContent = 'GAME OVER'
+      attempts.innerHTML = 'GAME OVER!<br>' + `the answer was ${answerArr.join('')}`
     }
   }
 }
